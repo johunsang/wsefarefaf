@@ -1,27 +1,27 @@
 /**
  * 기능 플래그 관리
  *
- * onesaas.json 설정에 따라 기능 활성화/비활성화를 결정합니다.
+ * config에서 기능 활성화/비활성화를 결정합니다.
  */
 
-import { getConfig, isFeatureEnabled } from './config'
+import { config } from './config'
 
 /**
  * 인증 관련 플래그
  */
 export const auth = {
-  isEnabled: () => isFeatureEnabled('auth'),
+  isEnabled: () => config.features.auth.enabled,
 
-  isProviderEnabled: (provider: string) => {
-    const config = getConfig()
+  isProviderEnabled: (provider: 'email' | 'google' | 'kakao') => {
     if (!config.features.auth.enabled) return false
-    return config.features.auth.providers.includes(provider)
+    return config.features.auth.providers[provider] ?? false
   },
 
   getEnabledProviders: () => {
-    const config = getConfig()
     if (!config.features.auth.enabled) return []
-    return config.features.auth.providers
+    return Object.entries(config.features.auth.providers)
+      .filter(([, enabled]) => enabled)
+      .map(([provider]) => provider)
   },
 }
 
@@ -29,38 +29,25 @@ export const auth = {
  * 결제 관련 플래그
  */
 export const payment = {
-  isEnabled: () => isFeatureEnabled('payment'),
+  isEnabled: () => config.features.payment.enabled,
 
-  getProvider: () => {
-    const config = getConfig()
-    return config.features.payment.provider
-  },
+  getProvider: () => config.features.payment.provider,
 }
 
 /**
  * 관리자 대시보드 플래그
  */
 export const admin = {
-  isEnabled: () => isFeatureEnabled('admin'),
-}
-
-/**
- * 블로그 플래그
- */
-export const blog = {
-  isEnabled: () => isFeatureEnabled('blog'),
+  isEnabled: () => config.features.admin.enabled,
 }
 
 /**
  * AI 기능 플래그
  */
 export const ai = {
-  isEnabled: () => isFeatureEnabled('ai'),
+  isEnabled: () => config.features.ai.enabled,
 
-  getProvider: () => {
-    const config = getConfig()
-    return config.features.ai.provider || 'openai'
-  },
+  getProviders: () => config.features.ai.providers,
 }
 
 /**
@@ -70,7 +57,6 @@ export const featureFlags = {
   auth,
   payment,
   admin,
-  blog,
   ai,
 }
 

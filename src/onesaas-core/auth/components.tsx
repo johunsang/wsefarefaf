@@ -6,12 +6,12 @@
 
 import { useState } from 'react'
 import { useAuth } from './provider'
-import { getEnabledProviders, PROVIDER_META, type AuthProvider } from './config'
+import { getEnabledProviders, PROVIDER_META, type AuthProviderType } from './config'
 
 /**
  * 소셜 로그인 버튼
  */
-export function SocialLoginButton({ provider }: { provider: AuthProvider }) {
+export function SocialLoginButton({ provider }: { provider: AuthProviderType }) {
   const { signInWithProvider } = useAuth()
   const meta = PROVIDER_META[provider]
   const [loading, setLoading] = useState(false)

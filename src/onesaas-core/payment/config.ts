@@ -1,11 +1,8 @@
 /**
  * 결제 설정
  *
- * onesaas.json에서 결제 설정을 읽어옵니다.
+ * 환경 변수 기반 설정 (클라이언트/서버 모두 사용 가능)
  */
-
-import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
 
 export type PaymentProvider = 'portone' | 'tosspay'
 
@@ -15,34 +12,20 @@ export interface PaymentConfig {
   currency: string
 }
 
-let cachedConfig: PaymentConfig | null = null
-
 /**
- * 결제 설정 로드
+ * 결제 설정 로드 (환경 변수 기반)
+ *
+ * 환경 변수:
+ * - NEXT_PUBLIC_PAYMENT_ENABLED: "true" | "false"
+ * - NEXT_PUBLIC_PAYMENT_PROVIDER: "portone" | "tosspay"
  */
 export function getPaymentConfig(): PaymentConfig {
-  if (cachedConfig) {
-    return cachedConfig
-  }
-
-  try {
-    const configPath = join(process.cwd(), 'onesaas.json')
-    if (existsSync(configPath)) {
-      const config = JSON.parse(readFileSync(configPath, 'utf-8'))
-      cachedConfig = {
-        enabled: config.features?.payment?.enabled ?? false,
-        provider: config.features?.payment?.provider ?? 'portone',
-        currency: 'KRW',
-      }
-      return cachedConfig
-    }
-  } catch {
-    // 설정 파일 없으면 기본값
-  }
+  const enabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true'
+  const provider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER as PaymentProvider) || 'portone'
 
   return {
-    enabled: false,
-    provider: 'portone',
+    enabled,
+    provider,
     currency: 'KRW',
   }
 }

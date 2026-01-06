@@ -1,11 +1,8 @@
 /**
  * 인증 설정
  *
- * onesaas.json에서 인증 설정을 읽어옵니다.
+ * 환경 변수 기반 설정 (클라이언트/서버 모두 사용 가능)
  */
-
-import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
 
 export interface AuthConfig {
   enabled: boolean
@@ -14,11 +11,11 @@ export interface AuthConfig {
 
 // 지원하는 인증 제공자
 export const SUPPORTED_PROVIDERS = ['email', 'google', 'kakao', 'github'] as const
-export type AuthProvider = (typeof SUPPORTED_PROVIDERS)[number]
+export type AuthProviderType = (typeof SUPPORTED_PROVIDERS)[number]
 
 // 제공자별 메타데이터
 export const PROVIDER_META: Record<
-  AuthProvider,
+  AuthProviderType,
   { name: string; icon: string; color: string; bgColor: string }
 > = {
   email: {
@@ -47,40 +44,28 @@ export const PROVIDER_META: Record<
   },
 }
 
-let cachedConfig: AuthConfig | null = null
-
 /**
- * 인증 설정 로드
+ * 인증 설정 로드 (환경 변수 기반)
+ *
+ * 환경 변수:
+ * - NEXT_PUBLIC_AUTH_ENABLED: "true" | "false"
+ * - NEXT_PUBLIC_AUTH_PROVIDERS: "email,google,kakao,github"
  */
 export function getAuthConfig(): AuthConfig {
-  if (cachedConfig) {
-    return cachedConfig
-  }
-
-  try {
-    const configPath = join(process.cwd(), 'onesaas.json')
-    if (existsSync(configPath)) {
-      const config = JSON.parse(readFileSync(configPath, 'utf-8'))
-      cachedConfig = {
-        enabled: config.features?.auth?.enabled ?? true,
-        providers: config.features?.auth?.providers ?? ['email'],
-      }
-      return cachedConfig
-    }
-  } catch {
-    // 설정 파일 없으면 기본값
-  }
+  const enabled = process.env.NEXT_PUBLIC_AUTH_ENABLED !== 'false'
+  const providersEnv = process.env.NEXT_PUBLIC_AUTH_PROVIDERS || 'email,google,kakao'
+  const providers = providersEnv.split(',').map((p) => p.trim()).filter(Boolean)
 
   return {
-    enabled: true,
-    providers: ['email'],
+    enabled,
+    providers,
   }
 }
 
 /**
  * 특정 제공자 활성화 여부
  */
-export function isProviderEnabled(provider: AuthProvider): boolean {
+export function isProviderEnabled(provider: AuthProviderType): boolean {
   const config = getAuthConfig()
   return config.enabled && config.providers.includes(provider)
 }
@@ -88,10 +73,10 @@ export function isProviderEnabled(provider: AuthProvider): boolean {
 /**
  * 활성화된 제공자 목록
  */
-export function getEnabledProviders(): AuthProvider[] {
+export function getEnabledProviders(): AuthProviderType[] {
   const config = getAuthConfig()
   if (!config.enabled) return []
-  return config.providers.filter((p): p is AuthProvider =>
-    SUPPORTED_PROVIDERS.includes(p as AuthProvider)
+  return config.providers.filter((p): p is AuthProviderType =>
+    SUPPORTED_PROVIDERS.includes(p as AuthProviderType)
   )
 }

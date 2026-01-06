@@ -1,9 +1,8 @@
 /**
  * 관리자 설정
+ *
+ * 환경 변수 기반 설정 (클라이언트/서버 모두 사용 가능)
  */
-
-import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
 
 export interface AdminConfig {
   enabled: boolean
@@ -15,37 +14,17 @@ export interface AdminConfig {
   }
 }
 
-let cachedConfig: AdminConfig | null = null
-
 /**
- * 관리자 설정 로드
+ * 관리자 설정 로드 (환경 변수 기반)
+ *
+ * 환경 변수:
+ * - NEXT_PUBLIC_ADMIN_ENABLED: "true" | "false"
  */
 export function getAdminConfig(): AdminConfig {
-  if (cachedConfig) {
-    return cachedConfig
-  }
-
-  try {
-    const configPath = join(process.cwd(), 'onesaas.json')
-    if (existsSync(configPath)) {
-      const config = JSON.parse(readFileSync(configPath, 'utf-8'))
-      cachedConfig = {
-        enabled: config.features?.admin?.enabled ?? false,
-        features: {
-          analytics: config.features?.admin?.analytics ?? true,
-          userManagement: config.features?.admin?.userManagement ?? true,
-          contentManagement: config.features?.admin?.contentManagement ?? false,
-          settings: config.features?.admin?.settings ?? true,
-        },
-      }
-      return cachedConfig
-    }
-  } catch {
-    // 설정 파일 없으면 기본값
-  }
+  const enabled = process.env.NEXT_PUBLIC_ADMIN_ENABLED === 'true'
 
   return {
-    enabled: false,
+    enabled,
     features: {
       analytics: true,
       userManagement: true,
