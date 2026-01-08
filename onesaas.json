@@ -2,13 +2,13 @@
   "$schema": "https://onesaas.kr/schema/onesaas.json",
   "schemaVersion": "1.0.0",
   "project": {
-    "id": "dsfsdfsdfsdf",
-    "name": "dsfsdfsdfsdf",
-    "slug": "dsfsdfsdfsdf",
-    "company": "adasdasd",
-    "companyEn": "adasdasd",
-    "email": "support@dsfsdfsdfsdf.com",
-    "createdAt": "2026-01-08T04:00:52.066Z",
+    "id": "my-test-saas-0108",
+    "name": "my-test-saas-0108",
+    "slug": "my-test-saas-0108",
+    "company": "my-test-saas-0108",
+    "companyEn": "my-test-saas-0108",
+    "email": "support@my-test-saas-0108.com",
+    "createdAt": "2026-01-08T04:06:13.893Z",
     "generatedBy": "onesaas-wizard"
   },
   "template": {
@@ -17,22 +17,19 @@
     "source": "https://github.com/johunsang/onesass-starter"
   },
   "theme": {
-    "id": "minimal",
-    "appliedAt": "2026-01-08T04:00:52.066Z"
+    "id": "neon",
+    "appliedAt": "2026-01-08T04:06:13.893Z"
   },
   "features": {
     "auth": {
       "enabled": true,
       "providers": [
-        "email",
-        "google",
-        "github",
-        "kakao"
+        "email"
       ]
     },
     "payment": {
-      "enabled": true,
-      "provider": "portone"
+      "enabled": false,
+      "provider": "none"
     },
     "admin": {
       "enabled": true
