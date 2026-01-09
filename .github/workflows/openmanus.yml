@@ -35,7 +35,7 @@ jobs:
           # pillow 버전 고정
           pip install pillow==10.4.0
           # 모든 필수 패키지 직접 설치 (충돌 무시)
-          pip install openai anthropic pydantic pydantic-settings toml tenacity colorama tiktoken boto3 loguru httpx aiohttp structlog rich
+          pip install openai anthropic pydantic pydantic-settings toml tenacity colorama tiktoken boto3 loguru httpx aiohttp structlog rich docker
           # requirements.txt 설치 (충돌 허용)
           pip install -r requirements.txt 2>&1 | grep -v "ERROR: pip's dependency resolver" || true
           # 브라우저 자동화 패키지
